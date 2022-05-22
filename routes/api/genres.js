@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const Author = require("../../models/author");
+const Genre = require("../../models/genre");
 const Book = require("../../models/book");
 
-// Get Authors method
+// Get Genre method
 router.get("/", async (req, res) => {
   let searchOptions = {};
 
@@ -12,9 +12,9 @@ router.get("/", async (req, res) => {
   }
 
   try {
-    const authors = await Author.find(searchOptions);
+    const genres = await Genre.find(searchOptions);
     res.json({
-      authors: authors,
+      genres: genres,
       searchOptions: req.query,
     });
   } catch {
@@ -22,21 +22,21 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Post Author method
+// Post Genre method
 router.post("/", async (req, res) => {
-  const author = new Author({
+  const genre = new Genre({
     name: req.body.name,
   });
 
   try {
-    const newAuthor = await author.save((err, u) => {
+    const newAuthor = await genre.save((err, u) => {
       if (err || !u) {
         return res.status(500).send({
           status: "error",
           err,
         });
       }
-      return res.json({ status: 200, message: "Author added" });
+      return res.json({ status: 200, message: "Genre added" });
     });
   } catch {
     res.json({
@@ -45,17 +45,17 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Get Author by Id method
+// Get Genre by Id method
 router.get("/:id", async (req, res) => {
   try {
-    const author = await Author.findById(req.params.id);
-    //const books = await Book.find({ author: author.id }).limit(6).exec();
-    if (!author) {
+    const genre = await Genre.findById(req.params.id);
+    //const books = await Book.find({ genre: genre.id }).limit(6).exec();
+    if (!genre) {
       return res.json({ status: 404, message: "Not found" });
     }
     return res.json({
-      author,
-      //author: author,
+      genre,
+      //genre: genre,
       //booksByAuthor: books,
     });
   } catch {
@@ -63,42 +63,42 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Put author method
+// Put genre method
 router.put("/:id", async (req, res) => {
-  let author;
+  let genre;
 
   try {
-    author = await Author.findById(req.params.id);
-    author.name = req.body.name;
+    genre = await Genre.findById(req.params.id);
+    genre.name = req.body.name;
 
-    await author.save((err, u) => {
+    await genre.save((err, u) => {
       if (err || !u) {
         return res.status(500).send({
           status: "error",
           err,
         });
       }
-      return res.json({ status: 200, message: "Author updated" });
+      return res.json({ status: 200, message: "Genre updated" });
     });
   } catch {
-    if (author == null) {
-      res.json({ status: 404, message: "Author not found" });
+    if (genre == null) {
+      res.json({ status: 404, message: "Genre not found" });
     } else {
       res.json({ status: 500, message: "Something went wrong!" });
     }
   }
 });
 
-//Delete Author method
+//Delete Genre method
 router.delete("/:id", async (req, res) => {
-  let author;
+  let genre;
   try {
-    author = await Author.findById(req.params.id);
-    await author.remove();
-    res.json({ status: 200, message: "Author deleted" });
+    genre = await Genre.findById(req.params.id);
+    await genre.remove();
+    res.json({ status: 200, message: "Genre deleted" });
   } catch {
-    if (author == null) {
-      res.json({ status: 404, message: "Author not found" });
+    if (genre == null) {
+      res.json({ status: 404, message: "Genre not found" });
     } else {
       res.json({ status: 500, message: "Something went wrong!" });
     }

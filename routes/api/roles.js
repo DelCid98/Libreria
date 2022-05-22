@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const Author = require("../../models/author");
-const Book = require("../../models/book");
+const Rol = require("../../models/rol");
+const User = require("../../models/user");
 
-// Get Authors method
+// Get Roles method
 router.get("/", async (req, res) => {
   let searchOptions = {};
 
@@ -12,9 +12,9 @@ router.get("/", async (req, res) => {
   }
 
   try {
-    const authors = await Author.find(searchOptions);
+    const roles = await Rol.find(searchOptions);
     res.json({
-      authors: authors,
+      roles: roles,
       searchOptions: req.query,
     });
   } catch {
@@ -22,21 +22,21 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Post Author method
+// Post Rol method
 router.post("/", async (req, res) => {
-  const author = new Author({
+  const rol = new Rol({
     name: req.body.name,
   });
 
   try {
-    const newAuthor = await author.save((err, u) => {
+    const newAuthor = await rol.save((err, u) => {
       if (err || !u) {
         return res.status(500).send({
           status: "error",
           err,
         });
       }
-      return res.json({ status: 200, message: "Author added" });
+      return res.json({ status: 200, message: "Rol added" });
     });
   } catch {
     res.json({
@@ -45,60 +45,60 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Get Author by Id method
+// Get Rol by Id method
 router.get("/:id", async (req, res) => {
   try {
-    const author = await Author.findById(req.params.id);
-    //const books = await Book.find({ author: author.id }).limit(6).exec();
-    if (!author) {
+    const rol = await Rol.findById(req.params.id);
+    //const users = await User.find({ rol: rol.id }).limit(6).exec();
+    if (!rol) {
       return res.json({ status: 404, message: "Not found" });
     }
     return res.json({
-      author,
-      //author: author,
-      //booksByAuthor: books,
+      rol,
+      //rol: rol,
+      //booksByAuthor: users,
     });
   } catch {
     return res.json({ status: 500, message: "Something went wrong" });
   }
 });
 
-// Put author method
+// Put rol method
 router.put("/:id", async (req, res) => {
-  let author;
+  let rol;
 
   try {
-    author = await Author.findById(req.params.id);
-    author.name = req.body.name;
+    rol = await Rol.findById(req.params.id);
+    rol.name = req.body.name;
 
-    await author.save((err, u) => {
+    await rol.save((err, u) => {
       if (err || !u) {
         return res.status(500).send({
           status: "error",
           err,
         });
       }
-      return res.json({ status: 200, message: "Author updated" });
+      return res.json({ status: 200, message: "Rol updated" });
     });
   } catch {
-    if (author == null) {
-      res.json({ status: 404, message: "Author not found" });
+    if (rol == null) {
+      res.json({ status: 404, message: "Rol not found" });
     } else {
       res.json({ status: 500, message: "Something went wrong!" });
     }
   }
 });
 
-//Delete Author method
+//Delete Rol method
 router.delete("/:id", async (req, res) => {
-  let author;
+  let rol;
   try {
-    author = await Author.findById(req.params.id);
-    await author.remove();
-    res.json({ status: 200, message: "Author deleted" });
+    rol = await Rol.findById(req.params.id);
+    await rol.remove();
+    res.json({ status: 200, message: "Rol deleted" });
   } catch {
-    if (author == null) {
-      res.json({ status: 404, message: "Author not found" });
+    if (rol == null) {
+      res.json({ status: 404, message: "Rol not found" });
     } else {
       res.json({ status: 500, message: "Something went wrong!" });
     }

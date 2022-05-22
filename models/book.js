@@ -1,45 +1,48 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
+const BookRegistry = require("./bookregistry");
 
 const bookSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true
-    },
-    description: {
-        type: String
-    },
-    publishDate: {
-        type: Date,
-        required: true
-    },
-    pageCount: {
-        type: Number,
-        required: true
-    },
-    createdAt: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
-    coverImage: {
-        type: Buffer,
-        required: true
-    },
-    coverImageType: {
-        type: String,
-        required: true
-    },
-    author: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'Author'
-    }
-})
+  title: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+  },
+  publishYear: {
+    type: String,
+    required: true,
+  },
+  imageUrl: {
+    type: String,
+    required: true,
+  },
+  stock: {
+    type: Number,
+    required: true,
+  },
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Author",
+  },
+  genre: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Genre",
+  },
+});
 
-bookSchema.virtual('coverImagePath').get(function() {
-    if (this.coverImage != null && this.coverImageType != null) {
-        return `data:${this.coverImageType};charset=utf-8;base64,${this.coverImage.toString('base64')}`
+bookSchema.pre("remove", function (next) {
+  BookRegistry.find({ bookregistry: this.id }, (err, bookregistries) => {
+    if (err) {
+      next(err);
+    } else if (bookregistries.length > 0) {
+      next(new Error("This book has registries asociated"));
+    } else {
+      next();
     }
-})
+  });
+});
 
-module.exports = mongoose.model('Book', bookSchema)
+module.exports = mongoose.model("Book", bookSchema);
