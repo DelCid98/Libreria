@@ -54,6 +54,40 @@ router.post("/", async (req, res) => {
   }
 });
 
+// Post Login method
+router.post("/login", async (req, res) => {
+  let searchOptions = { email: req.body.email };
+
+  if (req.query.title != null && req.query.title != "") {
+    query = query.regex("title", new RegExp(req.query.title, "i"));
+  }
+
+  try {
+    const user = await User.findOne(searchOptions);
+    if (!user) {
+      return res.status(404).send({ status: "User or password incorrect" });
+    }
+    if (
+      user.password ==
+      encrypt.createHash("sha256").update(req.body.password).digest("base64")
+    ) {
+      return res.json({
+        user: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          rol: user.rol,
+        },
+        searchOptions: req.query,
+      });
+    } else {
+      return res.status(404).send({ status: "User or password incorrect" });
+    }
+  } catch {
+    res.json({ status: 500, message: "Error" });
+  }
+});
+
 // Get User by Id method
 router.get("/:id", async (req, res) => {
   try {
